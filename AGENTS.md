@@ -1,61 +1,61 @@
-# AGENTS.md - DOM Toolkit Development Guide
+# AGENTS.md - DOM Toolkit 开发指南
 
-This guide provides essential information for agentic coding agents working on the DOM Toolkit codebase.
+本指南为在 DOM Toolkit 代码库中工作的智能编码代理提供必要信息。
 
-## Quick Commands
+## 快速命令
 
-### Build Commands
+### 构建命令
 ```bash
-npm run build          # Build main library bundle
-npm run build:inject    # Build console injection version
-npm run build:modules   # Build individual ES modules
-npm run build:all       # Build all versions
-npm run dev            # Build with watch mode for development
+npm run build          # 构建主库文件
+npm run build:inject    # 构建控制台注入版本
+npm run build:modules   # 构建独立的 ES 模块
+npm run build:all       # 构建所有版本
+npm run dev            # 开发模式构建（监听文件变化）
 ```
 
-### Testing
-⚠️ **No test framework configured** - Manual testing required:
-- Use browser console for testing
-- Load examples in `examples/` directory
-- Test with CDN demo: `examples/cdn-demo.html`
+### 测试
+⚠️ **未配置测试框架** - 需要手动测试：
+- 使用浏览器控制台进行测试
+- 加载 `examples/` 目录中的示例
+- 使用 CDN 演示测试：`examples/cdn-demo.html`
 
-## Project Structure
+## 项目结构
 
 ```
 dom-toolkit/
-├── src/                    # Source code (all IIFE modules)
-│   ├── index.js           # Main API facade
-│   ├── coordinate.js      # Mouse coordinate display
-│   ├── detector.js        # Element detection utilities
-│   ├── interactor.js      # Click/touch interaction
-│   └── scroller.js       # Scroll control
-├── dist/                  # Build outputs
-├── examples/              # Usage examples and demos
-└── vite*.config.js        # Build configurations
+├── src/                    # 源代码（所有 IIFE 模块）
+│   ├── index.js           # 主 API 接口
+│   ├── coordinate.js      # 鼠标坐标显示
+│   ├── detector.js        # 元素检测工具
+│   ├── interactor.js      # 点击/触摸交互
+│   └── scroller.js       # 滚动控制
+├── dist/                  # 构建输出
+├── examples/              # 使用示例和演示
+└── vite*.config.js        # 构建配置
 ```
 
-## Code Style Guidelines
+## 代码风格指南
 
-### Module Pattern
-All source files must use the IIFE (Immediately Invoked Function Expression) pattern:
+### 模块模式
+所有源文件必须使用 IIFE（立即调用函数表达式）模式：
 
 ```javascript
 /**
- * 模块描述 (Chinese comments preferred)
+ * 模块描述
  */
 (function() {
   'use strict';
   
   const moduleName = {
-    // Module properties and methods
+    // 模块属性和方法
     isReady: false,
     
     methodName(param1, param2 = {}) {
       return new Promise((resolve, reject) => {
         try {
-          // Implementation logic
+          // 实现逻辑
           if (!condition) {
-            reject(new Error('Descriptive error message'));
+            reject(new Error('描述性错误信息'));
             return;
           }
           resolve(result);
@@ -66,7 +66,7 @@ All source files must use the IIFE (Immediately Invoked Function Expression) pat
     }
   };
   
-  // Export to global or module system
+  // 导出到全局或模块系统
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = moduleName;
   } else {
@@ -75,26 +75,26 @@ All source files must use the IIFE (Immediately Invoked Function Expression) pat
 })();
 ```
 
-### Naming Conventions
-- **Files**: kebab-case (`coordinate.js`, `element-detector.js`)
-- **Functions**: camelCase (`getElementAt`, `startRealtimeDetection`)
-- **Variables**: camelCase
-- **Constants**: UPPER_SNAKE_CASE (rare)
-- **Global exports**: `window.domToolkitModuleName`
+### 命名规范
+- **文件名**：kebab-case（`coordinate.js`、`element-detector.js`）
+- **函数名**：camelCase（`getElementAt`、`startRealtimeDetection`）
+- **变量名**：camelCase
+- **常量名**：UPPER_SNAKE_CASE（较少使用）
+- **全局导出**：`window.domToolkitModuleName`
 
-### Import/Export Pattern
-- Use conditional exports for browser/Node.js compatibility
-- Export to `window.domToolkitModuleName` for browser usage
-- Reference other modules via `window.domToolkitModuleName`
-- Handle missing modules gracefully with Promise rejection
+### 导入/导出模式
+- 使用条件导出以支持浏览器/Node.js 兼容性
+- 导出到 `window.domToolkitModuleName` 供浏览器使用
+- 通过 `window.domToolkitModuleName` 引用其他模块
+- 优雅处理缺失模块，使用 Promise 拒绝
 
-### Error Handling
+### 错误处理
 ```javascript
 return new Promise((resolve, reject) => {
   try {
     const element = document.elementFromPoint(x, y);
     if (!element) {
-      reject(new Error(`No element found at coordinates (${x}, ${y})`));
+      reject(new Error(`在坐标 (${x}, ${y}) 处未找到元素`));
       return;
     }
     resolve(element);
@@ -104,14 +104,14 @@ return new Promise((resolve, reject) => {
 });
 ```
 
-### DOM Interaction Guidelines
-- All coordinates are viewport-relative (clientX/clientY)
-- Use `getBoundingClientRect()` for element positioning
-- Clean up DOM elements (event listeners, created elements)
-- Use z-index 10000+ for UI overlays
-- Handle both mouse and touch events when applicable
+### DOM 交互指南
+- 所有坐标都是视口相对坐标（clientX/clientY）
+- 使用 `getBoundingClientRect()` 进行元素定位
+- 清理 DOM 元素（事件监听器、创建的元素）
+- UI 覆盖层使用 z-index 10000+
+- 在适用时处理鼠标和触摸事件
 
-### CSS-in-JS Style
+### CSS-in-JS 样式
 ```javascript
 element.style.cssText = `
   position: fixed;
@@ -124,142 +124,142 @@ element.style.cssText = `
 `;
 ```
 
-## API Design Patterns
+## API 设计模式
 
-### Coordinate-based Operations
-- All interactions accept `(x, y)` as first parameters
-- Optional `options` parameter as last argument
-- Return Promises for async operations
+### 基于坐标的操作
+- 所有交互都接受 `(x, y)` 作为前两个参数
+- 可选的 `options` 参数作为最后一个参数
+- 异步操作返回 Promise
 
-### Method Naming
-- Use descriptive action verbs: `getElementAt`, `startRealtimeDetection`
-- Provide aliases for compatibility: `clickAt` → `click`
-- Use consistent prefixes: `start*`, `stop*`, `get*`, `set*`
+### 方法命名
+- 使用描述性动词：`getElementAt`、`startRealtimeDetection`
+- 提供兼容性别名：`clickAt` → `click`
+- 使用一致的前缀：`start*`、`stop*`、`get*`、`set*`
 
-### Promise-based APIs
+### 基于 Promise 的 API
 ```javascript
-// Good
+// 好的做法
 click(x, y, options = {}) {
   return new Promise((resolve, reject) => {
-    // Implementation
+    // 实现
   });
 }
 
-// Avoid - synchronous operations should still return resolved promises
+// 避免 - 同步操作仍应返回已解析的 Promise
 getResult() {
   return Promise.resolve(result);
 }
 ```
 
-## Adding New Features
+## 添加新功能
 
-### 1. Create Module
-- Add new file in `src/` following IIFE pattern
-- Export as `window.domToolkitNewModule`
+### 1. 创建模块
+- 在 `src/` 中添加新文件，遵循 IIFE 模式
+- 导出为 `window.domToolkitNewModule`
 
-### 2. Update Main Index
-- Add facade methods in `src/index.js`
-- Handle module loading gracefully
-- Provide compatibility aliases
+### 2. 更新主索引
+- 在 `src/index.js` 中添加外观方法
+- 优雅处理模块加载
+- 提供兼容性别名
 
-### 3. Build Configuration
-- Update `vite*.config.js` if new entry points needed
-- Test all build targets with `npm run build:all`
+### 3. 构建配置
+- 如需新的入口点，更新 `vite*.config.js`
+- 使用 `npm run build:all` 测试所有构建目标
 
-### 4. Documentation
-- Update `README.md` with new API methods
-- Add examples in `examples/` directory
-- Include JSDoc comments for public methods
+### 4. 文档
+- 在 `README.md` 中更新新的 API 方法
+- 在 `examples/` 目录中添加示例
+- 为公共方法包含 JSDoc 注释
 
-## Browser Compatibility
+## 浏览器兼容性
 
-### Target Environment
-- Modern browsers (ES6+)
-- No IE support required
-- Use standard DOM APIs (no jQuery)
+### 目标环境
+- 现代浏览器（ES6+）
+- 不需要 IE 支持
+- 使用标准 DOM API（不使用 jQuery）
 
-### Feature Detection
+### 功能检测
 ```javascript
 if (!window.MouseEvent || !document.elementFromPoint) {
-  return Promise.reject(new Error('Browser not supported'));
+  return Promise.reject(new Error('浏览器不支持'));
 }
 ```
 
-## Performance Considerations
+## 性能考虑
 
-### Event Handling
-- Remove event listeners when no longer needed
-- Use passive event listeners where possible
-- Throttle/debounce high-frequency events (mouse, scroll)
+### 事件处理
+- 不再需要时移除事件监听器
+- 在可能的情况下使用被动事件监听器
+- 节流/防抖高频事件（鼠标、滚动）
 
-### DOM Manipulation
-- Batch DOM operations
-- Use document fragments for multiple insertions
-- Clean up created elements after use
+### DOM 操作
+- 批量 DOM 操作
+- 多次插入时使用文档片段
+- 使用后清理创建的元素
 
-### Memory Management
-- Clear timeouts/intervals
-- Remove event listeners
-- Set object references to null when done
+### 内存管理
+- 清除定时器/间隔
+- 移除事件监听器
+- 完成后将对象引用设为 null
 
-## Debugging
+## 调试
 
-### Console Output
-- Use `console.log` for debugging (not production)
-- Include descriptive messages with context
-- Chinese error messages are acceptable (matches existing code)
+### 控制台输出
+- 使用 `console.log` 进行调试（生产环境不要）
+- 包含带上下文的描述性消息
+- 中文错误消息可接受（与现有代码匹配）
 
-### Browser Testing
-- Test in multiple browsers during development
-- Verify coordinate calculations across different screen sizes
-- Test both mouse and touch interactions
+### 浏览器测试
+- 开发期间在多个浏览器中测试
+- 验证不同屏幕尺寸下的坐标计算
+- 测试鼠标和触摸交互
 
-## Code Quality Notes
+## 代码质量说明
 
-### Current State
-- ✅ Good separation of concerns
-- ✅ Consistent module pattern
-- ✅ Promise-based APIs
-- ❌ No linting configured
-- ❌ No testing framework
-- ❌ Mixed Chinese/English comments
+### 当前状态
+- ✅ 良好的关注点分离
+- ✅ 一致的模块模式
+- ✅ 基于 Promise 的 API
+- ❌ 未配置代码检查
+- ❌ 无测试框架
+- ❌ 中英文注释混用
 
-### Recommendations
-- Consider adding ESLint for code consistency
-- Add unit testing framework (Jest/Vitest)
-- Standardize comment language (prefer English for new code)
-- Add TypeScript definitions for better IDE support
+### 建议
+- 考虑添加 ESLint 以保持代码一致性
+- 添加单元测试框架（Jest/Vitest）
+- 标准化注释语言（新代码建议英文）
+- 添加 TypeScript 定义以获得更好的 IDE 支持
 
-## Build Outputs
+## 构建输出
 
-### Main Library (`dist/dom-toolkit.js`)
-- Full bundle with all modules
-- IIFE format for browser usage
+### 主库（`dist/dom-toolkit.js`）
+- 包含所有模块的完整包
+- 浏览器使用的 IIFE 格式
 
-### Inject Version (`dist/dom-toolkit.inject.min.js`)
-- Console injection capable
-- Aggressively minified
-- Top-level variable mangling
+### 注入版本（`dist/dom-toolkit.inject.min.js`）
+- 支持控制台注入
+- 激进压缩
+- 顶级变量混淆
 
-### Individual Modules (`dist/modules/*.min.js`)
-- Separate ES modules
-- For selective loading
-- Modern bundle optimization
+### 独立模块（`dist/modules/*.min.js`）
+- 分离的 ES 模块
+- 用于选择性加载
+- 现代包优化
 
-## Development Workflow
+## 开发工作流
 
-1. **Make Changes**: Edit files in `src/`
-2. **Watch Mode**: `npm run dev` for automatic builds
-3. **Test**: Manual testing in browser console
-4. **Build All**: `npm run build:all` before committing
-5. **Verify**: Test all three build outputs
+1. **修改代码**：编辑 `src/` 中的文件
+2. **监听模式**：`npm run dev` 自动构建
+3. **测试**：在浏览器控制台中手动测试
+4. **构建全部**：提交前运行 `npm run build:all`
+5. **验证**：测试所有三种构建输出
 
-## Module Dependencies
+## 模块依赖
 
-- `index.js` - Main facade (depends on all other modules)
-- `coordinate.js` - Standalone
-- `detector.js` - Standalone  
-- `interactor.js` - Standalone
-- `scroller.js` - Standalone
+- `index.js` - 主外观（依赖所有其他模块）
+- `coordinate.js` - 独立
+- `detector.js` - 独立  
+- `interactor.js` - 独立
+- `scroller.js` - 独立
 
-Modules are designed to work independently. Load only what you need.
+模块设计为独立工作。只加载你需要的部分。
