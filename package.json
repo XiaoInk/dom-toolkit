@@ -1,0 +1,22 @@
+{
+  "name": "dom-toolkit",
+  "version": "1.0.0",
+  "description": "DOM操作工具集 - 坐标检测、元素交互、页面滚动",
+  "main": "src/index.js",
+  "browser": "dist/dom-toolkit.js",
+  "unpkg": "dist/dom-toolkit.min.js",
+  "jsdelivr": "dist/dom-toolkit.min.js",
+  "scripts": {
+    "build": "vite build",
+    "build:inject": "vite build --config vite.inject.config.js",
+    "build:modules": "vite build --config vite.modules.config.js",
+    "build:all": "npm run build && npm run build:inject && npm run build:modules",
+    "dev": "vite build --watch"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "terser": "^5.0.0"
+  },
+  "license": "MIT",
+  "keywords": ["dom", "automation", "web", "interaction", "coordinates", "scroll"]
+}
