@@ -19,7 +19,8 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        dir: 'dist'
+        dir: 'dist',
+        entryFileNames: '[name].js'
       }
     }
   }

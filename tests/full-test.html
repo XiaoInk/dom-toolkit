@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM Toolkit 完整功能验证</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .test-button { background: #007bff; color: white; border: none; padding: 8px 16px; margin: 5px; border-radius: 3px; cursor: pointer; }
+        .test-button:hover { background: #0056b3; }
+        .status { position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px 15px; border-radius: 5px; max-width: 300px; z-index: 10002; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .test-area { width: 150px; height: 60px; background: #28a745; color: white; display: flex; align-items: center; justify-content: center; margin: 10px 0; border-radius: 3px; cursor: pointer; user-select: none; }
+        .input-test { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; width: 200px; }
+        .scroll-content { height: 1500px; background: linear-gradient(to bottom, #f0f0f0, #e0e0e0); padding: 20px; margin: 20px 0; }
+        .result { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        .pass { color: #28a745; font-weight: bold; }
+        .fail { color: #dc3545; font-weight: bold; }
+        .highlight { background: yellow !important; transition: background 0.3s; }
+    </style>
+</head>
+<body>
+    <h1>🚀 DOM Toolkit 完整功能验证</h1>
+    <div id="status" class="status">准备验证...</div>
+    
+    <div class="test-section">
+        <h2>📦 模块加载验证</h2>
+        <button class="test-button" onclick="loadAllModules()">加载所有模块</button>
+        <button class="test-button" onclick="testModuleLoading()">检查模块状态</button>
+        <div id="loading-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🖱️ 坐标显示验证</h2>
+        <button class="test-button" onclick="testCoordinates()">启动坐标显示</button>
+        <button class="test-button" onclick="stopCoordinates()">停止坐标显示</button>
+        <div id="coordinates-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 元素检测验证</h2>
+        <div class="test-area" id="detect-target">检测目标</div>
+        <button class="test-button" onclick="testElementDetection()">检测此元素</button>
+        <button class="test-button" onclick="testHighlight()">高亮此元素</button>
+        <button class="test-button" onclick="startRealtimeDetection()">启动实时检测</button>
+        <div id="detection-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🖱️ 点击验证</h2>
+        <div class="test-area" id="click-target" onclick="this.textContent='点击成功!'">点击目标</div>
+        <button class="test-button" onclick="testClick()">测试自动点击</button>
+        <button class="test-button" onclick="testDoubleClick()">测试双击</button>
+        <button class="test-button" onclick="testRightClick()">测试右键</button>
+        <div id="click-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>⌨️ 输入验证</h2>
+        <input type="text" id="test-input" class="input-test" placeholder="测试输入框">
+        <button class="test-button" onclick="testType()">测试自动输入</button>
+        <button class="test-button" onclick="clearInput()">清空</button>
+        <div id="type-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📜 滚动验证</h2>
+        <button class="test-button" onclick="testScroll('down', 300)">向下滚动</button>
+        <button class="test-button" onclick="testScroll('up', 300)">向上滚动</button>
+        <button class="test-button" onclick="testScroll({top: true})">滚动到顶部</button>
+        <button class="test-button" onclick="testScroll({bottom: true})">滚动到底部</button>
+        <div id="scroll-result" class="result"></div>
+    </div>
+    
+    <div class="scroll-content">
+        <h2>长内容区域（用于滚动测试）</h2>
+        <div class="test-area" id="scroll-target">滚动目标</div>
+        <p>继续向下滚动...</p>
+        <div class="test-area" id="scroll-target-2">底部目标</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔄 批量操作验证</h2>
+        <button class="test-button" onclick="testBatchClick()">批量点击测试</button>
+        <button class="test-button" onclick="testBatchOperate()">复杂批量操作</button>
+        <button class="test-button" onclick="testDrag()">拖拽测试</button>
+        <div id="batch-result" class="result"></div>
+    </div>
+    
+    <!-- 先加载所有模块 -->
+    <script src="dist/modules/coordinate.min.js"></script>
+    <script src="dist/modules/detector.min.js"></script>
+    <script src="dist/modules/interactor.min.js"></script>
+    <script src="dist/modules/scroller.min.js"></script>
+    <!-- 再加载统一API -->
+    <script src="dist/index.js"></script>
+    
+    <script>
+        function updateStatus(message) {
+            document.getElementById('status').textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        }
+        
+        function showResult(elementId, message, isPass = true) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<span class="${isPass ? 'pass' : 'fail'}">${isPass ? '✅' : '❌'} ${message}</span>`;
+        }
+        
+        // 加载所有模块
+        function loadAllModules() {
+            updateStatus('加载所有模块...');
+            const modules = ['domToolkitCoordinates', 'domToolkitDetector', 'domToolkitInteractor', 'domToolkitScroller'];
+            const loadedModules = modules.filter(name => typeof window[name] !== 'undefined');
+            
+            if (loadedModules.length === modules.length) {
+                showResult('loading-result', `所有模块加载成功: ${loadedModules.join(', ')}`);
+                updateStatus('✅ 模块加载完成');
+                testModuleLoading();
+            } else {
+                showResult('loading-result', `部分模块缺失: ${modules.filter(m => !loadedModules.includes(m)).join(', ')}`, false);
+            }
+        }
+        
+        // 检查模块状态
+        function testModuleLoading() {
+            const modules = {
+                'domToolkitCoordinates': '坐标模块',
+                'domToolkitDetector': '检测模块', 
+                'domToolkitInteractor': '交互模块',
+                'domToolkitScroller': '滚动模块'
+            };
+            
+            let results = [];
+            for (let [name, desc] of Object.entries(modules)) {
+                if (typeof window[name] !== 'undefined') {
+                    results.push(`${desc}: ✅`);
+                } else {
+                    results.push(`${desc}: ❌`);
+                }
+            }
+            
+            showResult('loading-result', results.join(' | '));
+        }
+        
+        // 测试坐标显示
+        function testCoordinates() {
+            updateStatus('启动坐标显示...');
+            try {
+                if (typeof domToolkitCoordinates !== 'undefined' && domToolkitCoordinates.startDisplay) {
+                    domToolkitCoordinates.startDisplay();
+                    showResult('coordinates-result', '坐标显示启动成功');
+                    updateStatus('✅ 坐标显示正常');
+                } else {
+                    showResult('coordinates-result', '坐标模块未加载', false);
+                }
+            } catch (error) {
+                showResult('coordinates-result', `启动失败: ${error.message}`, false);
+            }
+        }
+        
+        function stopCoordinates() {
+            try {
+                if (typeof domToolkitCoordinates !== 'undefined' && domToolkitCoordinates.stopDisplay) {
+                    domToolkitCoordinates.stopDisplay();
+                    showResult('coordinates-result', '坐标显示已停止');
+                }
+            } catch (error) {
+                showResult('coordinates-result', `停止失败: ${error.message}`, false);
+            }
+        }
+        
+        // 测试元素检测
+        function testElementDetection() {
+            updateStatus('测试元素检测...');
+            const target = document.getElementById('detect-target');
+            const rect = target.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            try {
+                if (typeof domToolkitDetector !== 'undefined' && domToolkitDetector.getElementAt) {
+                    const element = domToolkitDetector.getElementAt(x, y);
+                    if (element && element === target) {
+                        showResult('detection-result', `检测成功: ${element.tagName} - "${element.textContent}"`);
+                        updateStatus('✅ 元素检测正常');
+                    } else {
+                        showResult('detection-result', `检测失败: 期望检测到目标元素`, false);
+                    }
+                } else {
+                    showResult('detection-result', '检测模块未加载', false);
+                }
+            } catch (error) {
+                showResult('detection-result', `检测错误: ${error.message}`, false);
+            }
+        }
+        
+        function testHighlight() {
+            updateStatus('测试元素高亮...');
+            const target = document.getElementById('detect-target');
+            const rect = target.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            try {
+                if (typeof domToolkitDetector !== 'undefined' && domToolkitDetector.highlightAt) {
+                    domToolkitDetector.highlightAt(x, y, 2000);
+                    showResult('detection-result', '高亮显示成功（2秒）');
+                    updateStatus('✅ 高亮功能正常');
+                } else {
+                    showResult('detection-result', '检测模块未加载', false);
+                }
+            } catch (error) {
+                showResult('detection-result', `高亮错误: ${error.message}`, false);
+            }
+        }
+        
+        function startRealtimeDetection() {
+            try {
+                if (typeof domToolkitDetector !== 'undefined' && domToolkitDetector.startRealtimeDetection) {
+                    domToolkitDetector.startRealtimeDetection();
+                    showResult('detection-result', '实时检测已启动，按住Ctrl键移动鼠标');
+                    updateStatus('✅ 实时检测启动');
+                } else {
+                    showResult('detection-result', '检测模块未加载', false);
+                }
+            } catch (error) {
+                showResult('detection-result', `实时检测错误: ${error.message}`, false);
+            }
+        }
+        
+        // 测试点击
+        function testClick() {
+            updateStatus('测试自动点击...');
+            const target = document.getElementById('click-target');
+            const rect = target.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            try {
+                if (typeof domToolkitInteractor !== 'undefined' && domToolkitInteractor.clickAt) {
+                    domToolkitInteractor.clickAt(x, y)
+                        .then(() => {
+                            showResult('click-result', '单点测试通过');
+                            updateStatus('✅ 点击验证通过');
+                        })
+                        .catch(err => {
+                            showResult('click-result', `点击失败: ${err.message}`, false);
+                        });
+                } else {
+                    showResult('click-result', '交互模块未加载', false);
+                }
+            } catch (error) {
+                showResult('click-result', `点击错误: ${error.message}`, false);
+            }
+        }
+        
+        function testDoubleClick() {
+            updateStatus('测试双击...');
+            const target = document.getElementById('click-target');
+            const rect = target.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            try {
+                if (typeof domToolkitInteractor !== 'undefined' && domToolkitInteractor.doubleClickAt) {
+                    domToolkitInteractor.doubleClickAt(x, y)
+                        .then(() => {
+                            showResult('click-result', '双击测试通过');
+                            updateStatus('✅ 双击验证通过');
+                        })
+                        .catch(err => {
+                            showResult('click-result', `双击失败: ${err.message}`, false);
+                        });
+                } else {
+                    showResult('click-result', '交互模块未加载', false);
+                }
+            } catch (error) {
+                showResult('click-result', `双击错误: ${error.message}`, false);
+            }
+        }
+        
+        function testRightClick() {
+            updateStatus('测试右键点击...');
+            const target = document.getElementById('click-target');
+            const rect = target.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            try {
+                if (typeof domToolkitInteractor !== 'undefined' && domToolkitInteractor.rightClickAt) {
+                    domToolkitInteractor.rightClickAt(x, y)
+                        .then(() => {
+                            showResult('click-result', '右键点击测试通过');
+                            updateStatus('✅ 右键验证通过');
+                        })
+                        .catch(err => {
+                            showResult('click-result', `右键失败: ${err.message}`, false);
+                        });
+                } else {
+                    showResult('click-result', '交互模块未加载', false);
+                }
+            } catch (error) {
+                showResult('click-result', `右键错误: ${error.message}`, false);
+            }
+        }
+        
+        // 测试输入
+        function testType() {
+            updateStatus('测试自动输入...');
+            const input = document.getElementById('test-input');
+            const rect = input.getBoundingClientRect();
+            const x = rect.left + 10;
+            const y = rect.top + rect.height / 2;
+            
+            try {
+                if (typeof domToolkitInteractor !== 'undefined' && domToolkitInteractor.typeAt) {
+                    domToolkitInteractor.typeAt(x, y, '自动化测试文本', { clear: true, typingDelay: 50 })
+                        .then(() => {
+                            showResult('type-result', '自动输入测试通过');
+                            updateStatus('✅ 输入验证通过');
+                        })
+                        .catch(err => {
+                            showResult('type-result', `输入失败: ${err.message}`, false);
+                        });
+                } else {
+                    showResult('type-result', '交互模块未加载', false);
+                }
+            } catch (error) {
+                showResult('type-result', `输入错误: ${error.message}`, false);
+            }
+        }
+        
+        function clearInput() {
+            document.getElementById('test-input').value = '';
+            showResult('type-result', '输入框已清空');
+        }
+        
+        // 测试滚动
+        function testScroll(...args) {
+            updateStatus('测试滚动功能...');
+            try {
+                if (typeof domToolkit !== 'undefined' && domToolkit.scroll) {
+                    domToolkit.scroll(...args)
+                        .then(() => {
+                            showResult('scroll-result', `滚动测试通过: ${JSON.stringify(args)}`);
+                            updateStatus('✅ 滚动验证通过');
+                        })
+                        .catch(err => {
+                            showResult('scroll-result', `滚动失败: ${err.message}`, false);
+                        });
+                } else {
+                    showResult('scroll-result', '滚动模块未加载', false);
+                }
+            } catch (error) {
+                showResult('scroll-result', `滚动错误: ${error.message}`, false);
+            }
+        }
+        
+        // 测试批量操作
+        function testBatchClick() {
+            updateStatus('测试批量点击...');
+            const target = document.getElementById('click-target');
+            const rect = target.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            try {
+                if (typeof domToolkitInteractor !== 'undefined' && domToolkitInteractor.batchClick) {
+                    const coordinates = [
+                        {x: centerX - 20, y: centerY},
+                        {x: centerX, y: centerY},
+                        {x: centerX + 20, y: centerY}
+                    ];
+                    
+                    domToolkitInteractor.batchClick(coordinates, {delayBetween: 300})
+                        .then(() => {
+                            showResult('batch-result', '批量点击测试通过');
+                            updateStatus('✅ 批量操作验证通过');
+                        })
+                        .catch(err => {
+                            showResult('batch-result', `批量操作失败: ${err.message}`, false);
+                        });
+                } else {
+                    showResult('batch-result', '交互模块未加载', false);
+                }
+            } catch (error) {
+                showResult('batch-result', `批量操作错误: ${error.message}`, false);
+            }
+        }
+        
+        function testBatchOperate() {
+            updateStatus('测试复杂批量操作...');
+            try {
+                if (typeof domToolkitScroller !== 'undefined' && domToolkitScroller.scrollAndBatchOperate) {
+                    const operations = [
+                        {scroll: {top: true}},
+                        {scroll: {down: true, distance: 400}},
+                        {scroll: {down: true, distance: 400}}
+                    ];
+                    
+                    domToolkitScroller.scrollAndBatchOperate(operations, {scrollDelay: 500, operationDelay: 300})
+                        .then(() => {
+                            showResult('batch-result', '复杂批量操作测试通过');
+                            updateStatus('✅ 复杂批量操作验证通过');
+                        })
+                        .catch(err => {
+                            showResult('batch-result', `复杂批量操作失败: ${err.message}`, false);
+                        });
+                } else {
+                    showResult('batch-result', '滚动模块未加载', false);
+                }
+            } catch (error) {
+                showResult('batch-result', `复杂批量操作错误: ${error.message}`, false);
+            }
+        }
+        
+        function testDrag() {
+            updateStatus('测试拖拽操作...');
+            const target = document.getElementById('click-target');
+            const rect = target.getBoundingClientRect();
+            const startX = rect.left + rect.width / 2;
+            const startY = rect.top + rect.height / 2;
+            const endX = startX + 100;
+            const endY = startY;
+            
+            try {
+                if (typeof domToolkitInteractor !== 'undefined' && domToolkitInteractor.dragFromTo) {
+                    domToolkitInteractor.dragFromTo(startX, startY, endX, endY, {duration: 500})
+                        .then(() => {
+                            showResult('batch-result', '拖拽测试通过');
+                            updateStatus('✅ 拖拽验证通过');
+                        })
+                        .catch(err => {
+                            showResult('batch-result', `拖拽失败: ${err.message}`, false);
+                        });
+                } else {
+                    showResult('batch-result', '交互模块未加载', false);
+                }
+            } catch (error) {
+                showResult('batch-result', `拖拽错误: ${error.message}`, false);
+            }
+        }
+        
+        // 页面加载后自动加载模块
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                loadAllModules();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

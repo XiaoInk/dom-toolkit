@@ -1,0 +1,25 @@
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  build: {
+    lib: {
+      entry: 'src/scroller.js',
+      name: 'domToolkitScroller',
+      fileName: 'scroller.min',
+      formats: ['iife']
+    },
+    rollupOptions: {
+      output: {
+        dir: 'dist/modules',
+        entryFileNames: 'scroller.min.iife.js'
+      }
+    },
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
+  }
+});

@@ -54,3 +54,12 @@ jspm_packages/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Build artifacts (keep dist/ but ignore temp files)
+*.tmp
+*.temp
+
+# Editor backup files
+*~
+*.bak
+*.backup

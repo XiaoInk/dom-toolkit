@@ -3,15 +3,20 @@
   "version": "1.0.0",
   "description": "DOM操作工具集 - 坐标检测、元素交互、页面滚动",
   "main": "src/index.js",
-  "browser": "dist/dom-toolkit.js",
-  "unpkg": "dist/dom-toolkit.min.js",
-  "jsdelivr": "dist/dom-toolkit.min.js",
+  "browser": "dist/index.js",
+  "unpkg": "dist/index.js",
+  "jsdelivr": "dist/index.js",
   "scripts": {
     "build": "vite build",
-    "build:inject": "vite build --config vite.inject.config.js",
-    "build:modules": "vite build --config vite.modules.config.js",
+    "build:inject": "vite build --config config/vite.inject.config.js",
+    "build:modules": "npm run build:coordinate && npm run build:detector && npm run build:interactor && npm run build:scroller",
+    "build:coordinate": "vite build --config config/vite.coordinate.config.js",
+    "build:detector": "vite build --config config/vite.detector.config.js", 
+    "build:interactor": "vite build --config config/vite.interactor.config.js",
+    "build:scroller": "vite build --config config/vite.scroller.config.js",
     "build:all": "npm run build && npm run build:inject && npm run build:modules",
-    "dev": "vite build --watch"
+    "dev": "vite build --config config/vite.config.js --watch",
+    "test": "echo \"请打开 tests/full-test.html 进行手动测试\" && open http://localhost:8080/tests/full-test.html"
   },
   "devDependencies": {
     "vite": "^5.0.0",

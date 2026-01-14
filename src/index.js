@@ -26,25 +26,25 @@
     
     doubleClick: function(x, y, options) {
       return window.domToolkitInteractor ? 
-        window.domToolkitInteractor.doubleClick(x, y, options) : 
+        window.domToolkitInteractor.doubleClickAt(x, y, options) : 
         Promise.reject(new Error('interactor模块未加载'));
     },
     
     rightClick: function(x, y, options) {
       return window.domToolkitInteractor ? 
-        window.domToolkitInteractor.rightClick(x, y, options) : 
+        window.domToolkitInteractor.rightClickAt(x, y, options) : 
         Promise.reject(new Error('interactor模块未加载'));
     },
     
     type: function(x, y, text, options) {
       return window.domToolkitInteractor ? 
-        window.domToolkitInteractor.type(x, y, text, options) : 
+        window.domToolkitInteractor.typeAt(x, y, text, options) : 
         Promise.reject(new Error('interactor模块未加载'));
     },
     
     drag: function(startX, startY, endX, endY, options) {
       return window.domToolkitInteractor ? 
-        window.domToolkitInteractor.drag(startX, startY, endX, endY, options) : 
+        window.domToolkitInteractor.dragFromTo(startX, startY, endX, endY, options) : 
         Promise.reject(new Error('interactor模块未加载'));
     },
     
