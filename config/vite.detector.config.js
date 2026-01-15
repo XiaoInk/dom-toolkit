@@ -5,14 +5,8 @@ export default defineConfig({
     lib: {
       entry: 'src/detector.js',
       name: 'domToolkitDetector',
-      fileName: 'detector.min',
+      fileName: () => 'detector.min.iife.js',
       formats: ['iife']
-    },
-    rollupOptions: {
-      output: {
-        dir: 'dist/modules',
-        entryFileNames: 'detector.min.iife.js'
-      }
     },
     minify: 'terser',
     terserOptions: {
@@ -20,6 +14,13 @@ export default defineConfig({
         drop_console: true,
         drop_debugger: true
       }
-    }
+    },
+    rollupOptions: {
+      output: {
+        dir: 'dist/modules',
+        entryFileNames: 'detector.min.iife.js'
+      }
+    },
+    emptyOutDir: false
   }
 });

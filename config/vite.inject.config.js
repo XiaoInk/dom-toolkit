@@ -22,8 +22,10 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        dir: 'dist'
+        dir: 'dist',
+        entryFileNames: 'dom-toolkit.inject.min.js'
       }
-    }
+    },
+    emptyOutDir: false
   }
 });

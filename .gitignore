@@ -55,7 +55,8 @@ jspm_packages/
 ehthumbs.db
 Thumbs.db
 
-# Build artifacts (keep dist/ but ignore temp files)
+# Build artifacts
+dist/
 *.tmp
 *.temp
 

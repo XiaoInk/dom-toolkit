@@ -16,7 +16,10 @@
     "build:scroller": "vite build --config config/vite.scroller.config.js",
     "build:all": "npm run build && npm run build:inject && npm run build:modules",
     "dev": "vite build --config config/vite.config.js --watch",
-    "test": "echo \"请打开 tests/full-test.html 进行手动测试\" && open http://localhost:8080/tests/full-test.html"
+    "test": "echo \"请选择测试类型:\n1. 接口测试: tests/interface-test.html\n2. 完整功能测试: tests/full-test.html\n3. 滚动专项测试: tests/scroll-test.html\" && open tests/interface-test.html",
+    "test:interface": "echo \"打开接口测试页面\" && open tests/interface-test.html",
+    "test:full": "echo \"打开完整功能测试页面\" && open tests/full-test.html",
+    "test:scroll": "echo \"打开滚动专项测试页面\" && open tests/scroll-test.html"
   },
   "devDependencies": {
     "vite": "^5.0.0",

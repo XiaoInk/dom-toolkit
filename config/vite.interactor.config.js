@@ -5,14 +5,8 @@ export default defineConfig({
     lib: {
       entry: 'src/interactor.js',
       name: 'domToolkitInteractor',
-      fileName: 'interactor.min',
+      fileName: () => 'interactor.min.iife.js',
       formats: ['iife']
-    },
-    rollupOptions: {
-      output: {
-        dir: 'dist/modules',
-        entryFileNames: 'interactor.min.iife.js'
-      }
     },
     minify: 'terser',
     terserOptions: {
@@ -20,6 +14,13 @@ export default defineConfig({
         drop_console: true,
         drop_debugger: true
       }
-    }
+    },
+    rollupOptions: {
+      output: {
+        dir: 'dist/modules',
+        entryFileNames: 'interactor.min.iife.js'
+      }
+    },
+    emptyOutDir: false
   }
 });

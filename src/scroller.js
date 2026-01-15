@@ -142,9 +142,6 @@
               document.documentElement.scrollWidth - window.innerWidth;
             targetX = distance !== null ? 
               Math.min(maxX, currentPos.x + distance) : maxX;
-          } else if (x !== 0 || y !== 0) {
-            targetX = x;
-            targetY = y;
           } else if (top) {
             targetY = 0;
             targetX = 0;
@@ -158,6 +155,9 @@
             targetX = element ? 
               element.scrollWidth - element.clientWidth : 
               document.documentElement.scrollWidth - window.innerWidth;
+          } else if (x !== 0 || y !== 0) {
+            targetX = x;
+            targetY = y;
           }
           
           const scrollOptions = {
@@ -197,11 +197,15 @@
           if (element) {
             element.scrollBy({ left: x, top: y, behavior: behavior });
           } else {
-            // 使用原生window.scrollBy避免递归
-            const nativeScrollBy = window.scrollBy;
-            window.scrollBy = undefined; // 临时移除自定义函数
-            window.scrollBy({ left: x, top: y, behavior: behavior });
-            window.scrollBy = nativeScrollBy; // 恢复自定义函数
+            // 使用 document.documentElement 或 window.scrollTo 来避免递归
+            const currentScrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+            const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            window.scrollTo({
+              left: currentScrollLeft + x,
+              top: currentScrollTop + y,
+              behavior: behavior
+            });
           }
           
           setTimeout(() => {

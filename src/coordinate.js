@@ -67,7 +67,10 @@
     stopDisplay() {
       if (!this.isDisplaying) return;
       
-      document.removeEventListener('mousemove', this.updateHandler);
+      if (this.updateHandler) {
+        document.removeEventListener('mousemove', this.updateHandler);
+        this.updateHandler = null;
+      }
       if (this.displayElement && this.displayElement.parentNode) {
         this.displayElement.parentNode.removeChild(this.displayElement);
       }

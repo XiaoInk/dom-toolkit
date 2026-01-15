@@ -5,7 +5,7 @@ export default defineConfig({
     lib: {
       entry: 'src/index.js',
       name: 'domToolkit',
-      fileName: 'dom-toolkit',
+      fileName: () => 'index.js',
       formats: ['iife']
     },
     minify: 'terser',
@@ -20,8 +20,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         dir: 'dist',
-        entryFileNames: '[name].js'
+        entryFileNames: 'index.js'
       }
-    }
+    },
+    emptyOutDir: false
   }
 });

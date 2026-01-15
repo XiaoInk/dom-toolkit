@@ -5,14 +5,8 @@ export default defineConfig({
     lib: {
       entry: 'src/coordinate.js',
       name: 'domToolkitCoordinates',
-      fileName: 'coordinate.min',
+      fileName: () => 'coordinate.min.iife.js',
       formats: ['iife']
-    },
-    rollupOptions: {
-      output: {
-        dir: 'dist/modules',
-        entryFileNames: 'coordinate.min.iife.js'
-      }
     },
     minify: 'terser',
     terserOptions: {
@@ -20,6 +14,13 @@ export default defineConfig({
         drop_console: true,
         drop_debugger: true
       }
-    }
+    },
+    rollupOptions: {
+      output: {
+        dir: 'dist/modules',
+        entryFileNames: 'coordinate.min.iife.js'
+      }
+    },
+    emptyOutDir: false
   }
 });

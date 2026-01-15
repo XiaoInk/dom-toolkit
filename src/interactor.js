@@ -11,7 +11,7 @@
           try {
             const element = document.elementFromPoint(x, y);
             if (!element) {
-              reject(new Error(`No element found at coordinates (${x}, ${y})`));
+              reject(new Error(`在坐标 (${x}, ${y}) 未找到元素`));
               return;
             }
             
@@ -65,7 +65,27 @@
     },
     
     rightClick(x, y, options = {}) {
-      return this.clickAt(x, y, { ...options, button: 2, eventType: 'contextmenu' });
+      return new Promise(async (resolve, reject) => {
+        try {
+          await this.clickAt(x, y, { ...options, button: 2 });
+          
+          const element = document.elementFromPoint(x, y);
+          if (element) {
+            const contextMenuEvent = new MouseEvent('contextmenu', {
+              clientX: x,
+              clientY: y,
+              button: 2,
+              bubbles: true,
+              cancelable: true
+            });
+            element.dispatchEvent(contextMenuEvent);
+          }
+          
+          resolve({ x, y, eventType: 'contextmenu' });
+        } catch (error) {
+          reject(error);
+        }
+      });
     },
     
     type(x, y, text, options = {}) {
@@ -76,7 +96,7 @@
           
           const element = document.elementFromPoint(x, y);
           if (!element) {
-            reject(new Error(`No element found at coordinates (${x}, ${y})`));
+            reject(new Error(`在坐标 (${x}, ${y}) 未找到元素`));
             return;
           }
           
@@ -139,7 +159,7 @@
           const { duration = 500 } = options;
           const startElement = document.elementFromPoint(startX, startY);
           if (!startElement) {
-            reject(new Error(`No element found at start coordinates (${startX}, ${startY})`));
+            reject(new Error(`在起始坐标 (${startX}, ${startY}) 未找到元素`));
             return;
           }
           
