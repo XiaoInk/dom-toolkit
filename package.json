@@ -1,6 +1,6 @@
 {
   "name": "dom-toolkit",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "DOM操作工具集 - 坐标检测、元素交互、页面滚动",
   "main": "src/index.js",
   "browser": "dist/index.js",
