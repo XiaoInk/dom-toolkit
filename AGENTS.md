@@ -186,9 +186,43 @@ clickAt(x, y, options = {}) {
 - 保持与旧版全局变量的向后兼容性
 - 用户界面内容期望使用中文文档
 
+## GitHub Actions 自动化部署
+
+项目使用标准化的 GitHub Actions 进行自动化构建和部署：
+
+### 部署架构
+- **部署方式**: 从 main 分支直接部署到 GitHub Pages
+- **工作流**: 使用 `actions/deploy-pages@v4` 标准部署
+- **权限**: 标准 `contents: read`, `pages: write`, `id-token: write`
+
+### 自动化触发条件
+- **推送至 main 分支**: 自动构建并部署到 GitHub Pages (`@latest`)
+- **推送版本标签**: 创建正式 Release (`@vX.X.X`)
+- **手动触发**: 支持 workflow_dispatch 手动部署
+
+### 部署配置
+```yaml
+# 标准部署配置
+- path: ./dist                    # 部署目录
+- source: main branch              # 从 main 分支部署
+- folder: / (root)               # 根目录部署
+```
+
+### 首次配置步骤
+1. 访问 Repository Settings → Pages
+2. Source 选择：`Deploy from a branch`
+3. Branch 选择：`main`
+4. Folder 选择：`/ (root)`
+5. 点击 Save
+
+### 部署后访问
+- **GitHub Pages**: https://xiaoink.github.io/dom-toolkit
+- **CDN**: https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/
+
 ## 文件位置
 
 - 源文件: `src/`
 - 构建配置: `config/`
 - 分发包: `dist/`（主包）, `dist/modules/`（独立模块）
+- GitHub Actions: `.github/workflows/deploy.yml`
 - 无自动化测试 - 仅手动测试

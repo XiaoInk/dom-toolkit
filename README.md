@@ -292,6 +292,25 @@ npm run test:full
 npm run test
 ```
 
+### 部署
+
+项目使用 GitHub Actions 进行自动化部署：
+
+#### 自动化部署流程
+- **推送至 main 分支**：自动构建并部署到 GitHub Pages
+- **推送版本标签**：创建正式 Release 和 CDN 版本
+
+#### 手动首次配置
+1. 访问 [Repository Settings](https://github.com/XiaoInk/dom-toolkit/settings/pages)
+2. **Source** 选择：`Deploy from a branch`
+3. **Branch** 选择：`main`
+4. **Folder** 选择：`/ (root)`
+5. 点击 **Save**
+
+#### 部署后访问
+- **GitHub Pages**: https://xiaoink.github.io/dom-toolkit
+- **GitHub Releases**: https://github.com/XiaoInk/dom-toolkit/releases
+
 项目提供了两个测试页面：
 
 1. **接口测试** (`tests/interface-test.html`)
