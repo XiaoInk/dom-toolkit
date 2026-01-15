@@ -6,6 +6,18 @@
   "browser": "dist/index.js",
   "unpkg": "dist/index.js",
   "jsdelivr": "dist/index.js",
+  "homepage": "https://xiaoink.github.io/dom-toolkit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xiaoink/dom-toolkit.git"
+  },
+  "files": [
+    "dist/",
+    "src/",
+    "README.md",
+    "LICENSE",
+    "AGENTS.md"
+  ],
   "scripts": {
     "build": "vite build",
     "build:inject": "vite build --config config/vite.inject.config.js",
@@ -19,11 +31,13 @@
     "test": "echo \"请选择测试类型:\n1. 接口测试: tests/interface-test.html\n2. 完整功能测试: tests/full-test.html\n3. 滚动专项测试: tests/scroll-test.html\" && open tests/interface-test.html",
     "test:interface": "echo \"打开接口测试页面\" && open tests/interface-test.html",
     "test:full": "echo \"打开完整功能测试页面\" && open tests/full-test.html",
-    "test:scroll": "echo \"打开滚动专项测试页面\" && open tests/scroll-test.html"
+    "test:scroll": "echo \"打开滚动专项测试页面\" && open tests/scroll-test.html",
+    "deploy": "npm run build:all && gh-pages -d dist"
   },
   "devDependencies": {
     "vite": "^5.0.0",
-    "terser": "^5.0.0"
+    "terser": "^5.0.0",
+    "gh-pages": "^6.0.0"
   },
   "license": "MIT",
   "keywords": ["dom", "automation", "web", "interaction", "coordinates", "scroll"]

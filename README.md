@@ -26,11 +26,16 @@
 
 ```html
 <!-- 完整版本 -->
-<script src="https://unpkg.com/dom-toolkit@latest/dist/index.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/index.js"></script>
 
 <!-- 或使用独立模块 -->
-<script src="https://unpkg.com/dom-toolkit@latest/dist/modules/coordinate.min.iife.js"></script>
-<script src="https://unpkg.com/dom-toolkit@latest/dist/modules/interactor.min.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/modules/coordinate.min.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/modules/detector.min.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/modules/interactor.min.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/modules/scroller.min.iife.js"></script>
+
+<!-- 版本锁定引用 -->
+<script src="https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@v1.0.0/dist/index.js"></script>
 ```
 
 ### NPM 安装
@@ -226,7 +231,7 @@ DOM Toolkit 采用模块化架构，支持按需加载：
 
 ```bash
 # 克隆仓库
-git clone https://gitee.com/XiaoInk/dom-toolkit.git
+git clone https://github.com/xiaoink/dom-toolkit.git
 cd dom-toolkit
 
 # 安装依赖
@@ -329,10 +334,11 @@ npm run test
 
 ## 🔗 相关链接
 
-- [在线演示](https://your-demo-url.com)
-- [API 文档](https://your-docs-url.com)
-- [问题反馈](https://github.com/your-username/dom-toolkit/issues)
-- [更新日志](CHANGELOG.md)
+- **CDN 引用**: https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/index.js
+- **GitHub 仓库**: https://github.com/xiaoink/dom-toolkit
+- **在线演示**: https://xiaoink.github.io/dom-toolkit
+- **问题反馈**: https://github.com/xiaoink/dom-toolkit/issues
+- **更新日志**: https://github.com/xiaoink/dom-toolkit/releases
 
 ---
 
@@ -340,6 +346,6 @@ npm run test
 
 **⭐ 如果这个项目对你有帮助，请给它一个星标！**
 
-Made with ❤️ by [小怪兽](https://gitee.com/XiaoInk)
+Made with ❤️ by [xiaoink](https://github.com/xiaoink)
 
 </div>
