@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>完整功能测试 - DOM Toolkit</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.6;
+            background: #f5f5f5;
+        }
+        .demo-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #2196F3;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #1976D2;
+            transform: translateY(-1px);
+        }
+        .test-area {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 2px dashed #dee2e6;
+            min-height: 100px;
+        }
+        .input-field {
+            width: 300px;
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .draggable {
+            width: 100px;
+            height: 50px;
+            background: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: move;
+            margin: 10px;
+            border-radius: 4px;
+            user-select: none;
+        }
+        .target-area {
+            width: 200px;
+            height: 100px;
+            border: 2px dashed #ff9800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            border-radius: 4px;
+            background: #fff3e0;
+        }
+        .scroll-content {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 15px;
+            background: white;
+        }
+        .scroll-content p {
+            height: 100px;
+            margin: 20px 0;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 4px;
+        }
+        .log {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .coordinates-display {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 DOM Toolkit 完整功能测试</h1>
+    
+    <!-- 坐标显示器 -->
+    <div class="coordinates-display" id="coordinates-display">
+        X: 0, Y: 0
+    </div>
+
+    <div class="demo-section">
+        <h2>🖱️ 点击和输入测试</h2>
+        <button onclick="testClick1()">点击输入框 1</button>
+        <button onclick="testClick2()">点击输入框 2</button>
+        <button onclick="testTypeInput1()">在输入框 1 中输入文字</button>
+        <button onclick="testDoubleClick()">双击标题</button>
+        <button onclick="testRightClick()">右键点击此区域</button>
+        
+        <div class="test-area">
+            <input class="input-field" id="input1" placeholder="输入框 1" value="">
+            <input class="input-field" id="input2" placeholder="输入框 2" value="">
+            <h3 id="title">双击测试标题</h3>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🎯 拖拽测试</h2>
+        <button onclick="testDrag()">拖拽绿色方块到橙色区域</button>
+        
+        <div class="test-area">
+            <div class="draggable" id="draggable">拖拽我</div>
+            <div class="target-area" id="target">目标区域</div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>📜 滚动测试</h2>
+        <button onclick="testScrollDown()">向下滚动</button>
+        <button onclick="testScrollUp()">向上滚动</button>
+        <button onclick="testScrollToElement()">滚动到段落 5</button>
+        <button onclick="testScrollAndClick()">滚动并点击段落 3</button>
+        
+        <div class="scroll-content" id="scroll-content">
+            <p id="para1">段落 1 - 这是滚动测试内容的第一段。</p>
+            <p id="para2">段落 2 - 这是滚动测试内容的第二段。</p>
+            <p id="para3">段落 3 - 这是滚动测试内容的第三段。</p>
+            <p id="para4">段落 4 - 这是滚动测试内容的第四段。</p>
+            <p id="para5">段落 5 - 这是滚动测试内容的第五段。</p>
+            <p id="para6">段落 6 - 这是滚动测试内容的第六段。</p>
+            <p id="para7">段落 7 - 这是滚动测试内容的第七段。</p>
+            <p id="para8">段落 8 - 这是滚动测试内容的第八段。</p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🔍 元素检测测试</h2>
+        <button onclick="testElementDetection()">检测当前位置元素</button>
+        <button onclick="testHighlight()">高亮显示标题</button>
+        <button onclick="toggleRealtimeDetection()">启动/停止实时检测</button>
+        
+        <div class="test-area">
+            <div id="detection-result">检测结果将显示在这里</div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>📦 批量操作测试</h2>
+        <button onclick="testBatchOperations()">执行批量操作序列</button>
+        <button onclick="testBatchScrollAndClick()">批量滚动和点击</button>
+        
+        <div class="test-area">
+            <div id="batch-result">批量操作结果将显示在这里</div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>📊 测试日志</h2>
+        <button onclick="clearLog()">清空日志</button>
+        <div id="log" class="log">等待测试...</div>
+    </div>
+
+    <!-- 加载所有模块 -->
+    <script src="../dist/index.js"></script>
+    <script src="../dist/modules/coordinate.min.iife.js"></script>
+    <script src="../dist/modules/detector.min.iife.js"></script>
+    <script src="../dist/modules/interactor.min.iife.js"></script>
+    <script src="../dist/modules/scroller.min.iife.js"></script>
+    
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            logDiv.textContent = logEntry + '\n' + logDiv.textContent;
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '日志已清空...\n';
+        }
+
+        function updateCoordinatesDisplay(x, y) {
+            const display = document.getElementById('coordinates-display');
+            display.textContent = `X: ${x}, Y: ${y}`;
+            display.style.display = 'block';
+        }
+
+        async function testClick1() {
+            try {
+                const input1 = document.getElementById('input1');
+                const rect = input1.getBoundingClientRect();
+                await domToolkit.click(rect.left + 5, rect.top + 5);
+                log('✅ 成功点击输入框 1');
+            } catch (error) {
+                log(`❌ 点击输入框 1 失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testClick2() {
+            try {
+                const input2 = document.getElementById('input2');
+                const rect = input2.getBoundingClientRect();
+                await domToolkit.click(rect.left + 5, rect.top + 5);
+                log('✅ 成功点击输入框 2');
+            } catch (error) {
+                log(`❌ 点击输入框 2 失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testTypeInput1() {
+            try {
+                const input1 = document.getElementById('input1');
+                const rect = input1.getBoundingClientRect();
+                await domToolkit.type(rect.left + 5, rect.top + 5, 'Hello DOM Toolkit!', {
+                    clear: true,
+                    typingDelay: 50
+                });
+                log('✅ 成功在输入框 1 中输入文字');
+            } catch (error) {
+                log(`❌ 输入文字失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDoubleClick() {
+            try {
+                const title = document.getElementById('title');
+                const rect = title.getBoundingClientRect();
+                await domToolkit.doubleClick(rect.left + 10, rect.top + 10);
+                log('✅ 成功双击标题');
+                title.style.color = '#ff5722';
+                setTimeout(() => {
+                    title.style.color = '';
+                }, 2000);
+            } catch (error) {
+                log(`❌ 双击失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testRightClick() {
+            try {
+                const demoSection = document.querySelector('.demo-section');
+                const rect = demoSection.getBoundingClientRect();
+                await domToolkit.rightClick(rect.left + 10, rect.top + 10);
+                log('✅ 成功执行右键点击');
+            } catch (error) {
+                log(`❌ 右键点击失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDrag() {
+            try {
+                const draggable = document.getElementById('draggable');
+                const target = document.getElementById('target');
+                const dragRect = draggable.getBoundingClientRect();
+                const targetRect = target.getBoundingClientRect();
+                
+                await domToolkit.drag(
+                    dragRect.left + 50, dragRect.top + 25,
+                    targetRect.left + 100, targetRect.top + 50,
+                    { duration: 1000 }
+                );
+                log('✅ 成功拖拽元素到目标区域');
+                target.textContent = '拖拽成功！';
+                target.style.background = '#4CAF50';
+            } catch (error) {
+                log(`❌ 拖拽失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testScrollDown() {
+            try {
+                await domToolkit.scroll('down', 200);
+                log('✅ 成功向下滚动');
+            } catch (error) {
+                log(`❌ 向下滚动失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testScrollUp() {
+            try {
+                await domToolkit.scroll('up', 200);
+                log('✅ 成功向上滚动');
+            } catch (error) {
+                log(`❌ 向上滚动失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testScrollToElement() {
+            try {
+                await domToolkit.scrollToElement('#para5');
+                log('✅ 成功滚动到段落 5');
+            } catch (error) {
+                log(`❌ 滚动到元素失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testScrollAndClick() {
+            try {
+                const para3 = document.getElementById('para3');
+                const rect = para3.getBoundingClientRect();
+                
+                await domToolkit.scrollAndClick(0, rect.top - 100, rect.left + 50, rect.top + 50);
+                log('✅ 成功滚动并点击段落 3');
+                para3.style.background = '#ffeb3b';
+                setTimeout(() => {
+                    para3.style.background = '';
+                }, 2000);
+            } catch (error) {
+                log(`❌ 滚动并点击失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testElementDetection() {
+            try {
+                // 检测页面中间位置的元素
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                
+                const elementInfo = window.domToolkitDetector.getElementAt(centerX, centerY);
+                const resultDiv = document.getElementById('detection-result');
+                
+                if (elementInfo) {
+                    resultDiv.innerHTML = `
+                        <strong>检测到元素:</strong><br>
+                        标签: ${elementInfo.tagName}<br>
+                        ID: ${elementInfo.id || '无'}<br>
+                        类名: ${elementInfo.className || '无'}<br>
+                        文本: ${elementInfo.textContent.substring(0, 50)}...
+                    `;
+                    log('✅ 成功检测元素');
+                } else {
+                    resultDiv.innerHTML = '未检测到元素';
+                    log('⚠️ 未检测到元素', 'warning');
+                }
+            } catch (error) {
+                log(`❌ 元素检测失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testHighlight() {
+            try {
+                const title = document.getElementById('title');
+                const rect = title.getBoundingClientRect();
+                
+                window.domToolkitDetector.highlightAt(rect.left + 50, rect.top + 10, 2000);
+                log('✅ 成功高亮显示标题');
+            } catch (error) {
+                log(`❌ 高亮显示失败: ${error.message}`, 'error');
+            }
+        }
+
+        let realtimeDetectionActive = false;
+        
+        function toggleRealtimeDetection() {
+            try {
+                if (realtimeDetectionActive) {
+                    window.domToolkitDetector.stopRealtimeDetection();
+                    realtimeDetectionActive = false;
+                    log('🛑 停止实时检测');
+                } else {
+                    window.domToolkitDetector.startRealtimeDetection();
+                    realtimeDetectionActive = true;
+                    log('▶️ 启动实时检测（按住 Ctrl 键移动鼠标）');
+                }
+            } catch (error) {
+                log(`❌ 实时检测操作失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testBatchOperations() {
+            try {
+                const input1 = document.getElementById('input1');
+                const rect = input1.getBoundingClientRect();
+                
+                const operations = [
+                    { click: { x: rect.left + 5, y: rect.top + 5, options: {} } },
+                    { type: { x: rect.left + 5, y: rect.top + 5, text: '批量测试', options: { clear: true } } }
+                ];
+                
+                const results = await domToolkit.batch(operations, { delayBetween: 500 });
+                
+                const resultDiv = document.getElementById('batch-result');
+                resultDiv.innerHTML = `<strong>批量操作完成:</strong> 执行了 ${results.length} 个操作`;
+                log('✅ 成功执行批量操作');
+            } catch (error) {
+                log(`❌ 批量操作失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testBatchScrollAndClick() {
+            try {
+                const operations = [
+                    { scroll: { direction: 'down', distance: 300 } },
+                    { scroll: { direction: 'up', distance: 150 } }
+                ];
+                
+                const results = await domToolkit.batchOperate(operations, { 
+                    scrollDelay: 500,
+                    operationDelay: 300
+                });
+                
+                const resultDiv = document.getElementById('batch-result');
+                resultDiv.innerHTML = `<strong>批量滚动完成:</strong> 执行了 ${results.length} 个操作`;
+                log('✅ 成功执行批量滚动操作');
+            } catch (error) {
+                log(`❌ 批量滚动操作失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后的初始化
+        window.addEventListener('load', () => {
+            log('🚀 DOM Toolkit 完整功能测试页面加载完成');
+            log('📋 可用模块: domToolkit, domToolkitCoordinates, domToolkitDetector, domToolkitInteractor, domToolkitScroller');
+            
+            // 启动坐标显示（用于演示）
+            if (window.domToolkitCoordinates) {
+                window.domToolkitCoordinates.startDisplay();
+                log('▶️ 坐标显示已启动');
+                
+                // 10秒后自动关闭坐标显示
+                setTimeout(() => {
+                    window.domToolkitCoordinates.stopDisplay();
+                    log('⏹️ 坐标显示已自动关闭');
+                }, 10000);
+            }
+        });
+
+        // 监听鼠标移动以更新坐标显示
+        document.addEventListener('mousemove', (e) => {
+            updateCoordinatesDisplay(e.clientX, e.clientY);
+        });
+    </script>
+</body>
+</html>

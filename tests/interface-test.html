@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>接口测试 - DOM Toolkit</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2196F3;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+        .result {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            border-left: 4px solid #4CAF50;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .error {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        .warning {
+            border-left-color: #ff9800;
+            background: #fff3e0;
+        }
+        .info {
+            border-left-color: #2196F3;
+            background: #e3f2fd;
+        }
+        .test-title {
+            color: #1976D2;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e3f2fd;
+            padding-bottom: 5px;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        .module-info {
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+        .summary {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 DOM Toolkit 接口测试</h1>
+    
+    <div class="info">
+        <strong>说明：</strong>此页面测试 DOM Toolkit 的所有接口，包括主包统一接口和各个独立模块。
+    </div>
+    
+    <div class="test-section">
+        <h2 class="test-title">📋 模块加载状态</h2>
+        <button onclick="checkModuleLoading()">检查模块加载状态</button>
+        <div id="loading-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2 class="test-title">🎯 主包接口检查</h2>
+        <button onclick="testMainInterfaces()">测试主包统一接口</button>
+        <div id="main-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2 class="test-title">🧩 独立模块接口检查</h2>
+        <button onclick="testModuleInterfaces()">测试独立模块接口</button>
+        <div id="module-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2 class="test-title">⚡ 功能测试</h2>
+        <button onclick="testClick()">点击测试 (100, 100)</button>
+        <button onclick="testScroll()">滚动测试</button>
+        <button onclick="testCoordinates()">坐标显示测试</button>
+        <button onclick="testDetector()">元素检测测试</button>
+        <button onclick="testBatch()">批量操作测试</button>
+        <div id="function-results"></div>
+    </div>
+
+    <!-- 加载所有必要的模块 -->
+    <script src="../dist/index.js"></script>
+    <script src="../dist/modules/coordinate.min.iife.js"></script>
+    <script src="../dist/modules/detector.min.iife.js"></script>
+    <script src="../dist/modules/interactor.min.iife.js"></script>
+    <script src="../dist/modules/scroller.min.iife.js"></script>
+    
+    <script>
+        function addResult(containerId, message, type = 'success') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            
+            // 设置样式类
+            switch(type) {
+                case 'error':
+                    div.className = 'result error';
+                    break;
+                case 'warning':
+                    div.className = 'result warning';
+                    break;
+                case 'info':
+                    div.className = 'result info';
+                    break;
+                default:
+                    div.className = 'result';
+            }
+            
+            div.textContent = message;
+            container.appendChild(div);
+        }
+
+        function addLoading(containerId, message) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'result loading';
+            div.textContent = message;
+            container.appendChild(div);
+        }
+
+        function clearResults(containerId) {
+            document.getElementById(containerId).innerHTML = '';
+        }
+
+        function checkModuleLoading() {
+            const results = document.getElementById('loading-results');
+            results.innerHTML = '';
+            
+            const modules = [
+                { name: 'domToolkit', obj: window.domToolkit, description: '主包统一接口' },
+                { name: 'domToolkitCoordinates', obj: window.domToolkitCoordinates, description: '坐标模块' },
+                { name: 'domToolkitDetector', obj: window.domToolkitDetector, description: '检测模块' },
+                { name: 'domToolkitInteractor', obj: window.domToolkitInteractor, description: '交互模块' },
+                { name: 'domToolkitScroller', obj: window.domToolkitScroller, description: '滚动模块' }
+            ];
+            
+            let loadedCount = 0;
+            modules.forEach(module => {
+                if (module.obj && typeof module.obj === 'object') {
+                    addResult('loading-results', `✅ ${module.name} - ${module.description} 已加载`);
+                    loadedCount++;
+                } else {
+                    addResult('loading-results', `❌ ${module.name} - ${module.description} 未加载`, 'error');
+                }
+            });
+            
+            if (loadedCount === modules.length) {
+                addResult('loading-results', '🎉 所有模块加载成功！', 'success');
+            } else {
+                addResult('loading-results', `⚠️ 只有 ${loadedCount}/${modules.length} 个模块加载成功`, 'warning');
+            }
+        }
+
+        function testMainInterfaces() {
+            clearResults('main-results');
+            addLoading('main-results', '正在测试主包接口...');
+            
+            setTimeout(() => {
+                clearResults('main-results');
+                
+                const expectedInterfaces = [
+                    'click', 'clickAt', 'doubleClick', 'rightClick', 'type', 'drag', 'batch',
+                    'scroll', 'scrollBy', 'scrollToElement', 'getPosition', 'getScrollPosition',
+                    'scrollAndClick', 'batchOperate', 'coordinates', 'detector'
+                ];
+                
+                let passedCount = 0;
+                expectedInterfaces.forEach(method => {
+                    if (typeof domToolkit[method] === 'function') {
+                        addResult('main-results', `✅ ${method}() - 函数存在`);
+                        passedCount++;
+                    } else if (typeof domToolkit[method] === 'object') {
+                        addResult('main-results', `✅ ${method} - 对象属性存在`);
+                        passedCount++;
+                    } else {
+                        addResult('main-results', `❌ ${method} - 缺失`, 'error');
+                    }
+                });
+                
+                if (passedCount === expectedInterfaces.length) {
+                    addResult('main-results', `🎉 所有主包接口测试通过！(${passedCount}/${expectedInterfaces.length})`, 'success');
+                } else {
+                    addResult('main-results', `⚠️ 主包接口测试: ${passedCount}/${expectedInterfaces.length} 通过`, 'warning');
+                }
+            }, 100);
+        }
+
+        function testModuleInterfaces() {
+            clearResults('module-results');
+            addLoading('module-results', '正在测试独立模块接口...');
+            
+            setTimeout(() => {
+                clearResults('module-results');
+                
+                let totalTests = 0;
+                let passedTests = 0;
+                
+                // 测试坐标模块
+                const coordinateMethods = ['startDisplay', 'stopDisplay', 'getPosition'];
+                coordinateMethods.forEach(method => {
+                    totalTests++;
+                    if (typeof window.domToolkitCoordinates?.[method] === 'function') {
+                        addResult('module-results', `✅ domToolkitCoordinates.${method}() - 存在`);
+                        passedTests++;
+                    } else {
+                        addResult('module-results', `❌ domToolkitCoordinates.${method}() - 缺失`, 'error');
+                    }
+                });
+                
+                // 测试检测模块
+                const detectorMethods = ['getElementAt', 'highlightAt', 'startRealtimeDetection', 'stopRealtimeDetection'];
+                detectorMethods.forEach(method => {
+                    totalTests++;
+                    if (typeof window.domToolkitDetector?.[method] === 'function') {
+                        addResult('module-results', `✅ domToolkitDetector.${method}() - 存在`);
+                        passedTests++;
+                    } else {
+                        addResult('module-results', `❌ domToolkitDetector.${method}() - 缺失`, 'error');
+                    }
+                });
+                
+                // 测试交互模块
+                const interactorMethods = ['clickAt', 'doubleClick', 'rightClick', 'type', 'drag', 'batch'];
+                interactorMethods.forEach(method => {
+                    totalTests++;
+                    if (typeof window.domToolkitInteractor?.[method] === 'function') {
+                        addResult('module-results', `✅ domToolkitInteractor.${method}() - 存在`);
+                        passedTests++;
+                    } else {
+                        addResult('module-results', `❌ domToolkitInteractor.${method}() - 缺失`, 'error');
+                    }
+                });
+                
+                // 测试滚动模块
+                const scrollerMethods = ['getScrollPosition', 'scroll', 'scrollBy', 'scrollToElement', 'scrollToPosition', 'scrollAndClick', 'batchOperate'];
+                scrollerMethods.forEach(method => {
+                    totalTests++;
+                    if (typeof window.domToolkitScroller?.[method] === 'function') {
+                        addResult('module-results', `✅ domToolkitScroller.${method}() - 存在`);
+                        passedTests++;
+                    } else {
+                        addResult('module-results', `❌ domToolkitScroller.${method}() - 缺失`, 'error');
+                    }
+                });
+                
+                if (passedTests === totalTests) {
+                    addResult('module-results', `🎉 所有独立模块接口测试通过！(${passedTests}/${totalTests})`, 'success');
+                } else {
+                    addResult('module-results', `⚠️ 独立模块接口测试: ${passedTests}/${totalTests} 通过`, 'warning');
+                }
+            }, 100);
+        }
+
+        async function testClick() {
+            try {
+                addResult('function-results', '🔄 正在执行点击测试...', 'info');
+                const result = await domToolkit.click(100, 100);
+                addResult('function-results', `✅ 点击成功: ${JSON.stringify(result)}`);
+            } catch (error) {
+                addResult('function-results', `❌ 点击失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testScroll() {
+            try {
+                addResult('function-results', '🔄 正在执行滚动测试...', 'info');
+                
+                // 检查模块是否正确加载
+                if (!window.domToolkitScroller) {
+                    addResult('function-results', '❌ scroller 模块未加载', 'error');
+                    return;
+                }
+                
+                const position = domToolkit.getPosition();
+                addResult('function-results', `✅ 当前位置: x=${position.x}, y=${position.y}`);
+                
+                // 测试 scrollBy 方法
+                await domToolkit.scrollBy(0, 50);
+                addResult('function-results', '✅ 相对滚动向下执行成功');
+                
+                // 等待一下再滚动回原位置
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await domToolkit.scrollBy(0, -50);
+                addResult('function-results', '✅ 相对滚动向上执行成功');
+                
+                // 测试 scroll 方法
+                await domToolkit.scroll('down', 100);
+                addResult('function-results', '✅ 方向滚动向下执行成功');
+                
+                await domToolkit.scroll('up', 100);
+                addResult('function-results', '✅ 方向滚动向上执行成功');
+                
+                addResult('function-results', '🎉 所有滚动测试完成');
+            } catch (error) {
+                addResult('function-results', `❌ 滚动失败: ${error.message}`, 'error');
+                console.error('Scroll test detailed error:', error);
+            }
+        }
+
+        function testCoordinates() {
+            try {
+                addResult('function-results', '🔄 正在启动坐标显示...', 'info');
+                window.domToolkitCoordinates.startDisplay();
+                addResult('function-results', '✅ 坐标显示已启动（3秒后自动停止）');
+                
+                setTimeout(() => {
+                    window.domToolkitCoordinates.stopDisplay();
+                    addResult('function-results', '✅ 坐标显示已停止');
+                }, 3000);
+            } catch (error) {
+                addResult('function-results', `❌ 坐标测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testDetector() {
+            try {
+                addResult('function-results', '🔄 正在测试元素检测...', 'info');
+                
+                // 检测当前页面标题元素
+                const elementInfo = window.domToolkitDetector.getElementAt(window.innerWidth / 2, 50);
+                if (elementInfo) {
+                    addResult('function-results', `✅ 检测到元素: ${elementInfo.tagName} (ID: ${elementInfo.id}, 类: ${elementInfo.className})`);
+                    
+                    // 高亮显示该元素
+                    window.domToolkitDetector.highlightAt(window.innerWidth / 2, 50, 1000);
+                    addResult('function-results', '✅ 元素高亮显示成功');
+                } else {
+                    addResult('function-results', '❌ 未检测到元素', 'warning');
+                }
+            } catch (error) {
+                addResult('function-results', `❌ 元素检测失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testBatch() {
+            try {
+                addResult('function-results', '🔄 正在执行批量操作测试...', 'info');
+                
+                const operations = [
+                    { click: { x: 100, y: 100, options: { delay: 100 } } },
+                    { click: { x: 200, y: 100, options: {} } }
+                ];
+                
+                const results = await domToolkit.batch(operations, {
+                    delayBetween: 200
+                });
+                
+                addResult('function-results', `✅ 批量操作成功: ${results.length} 个操作完成`);
+            } catch (error) {
+                addResult('function-results', `❌ 批量操作失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后自动检查模块加载状态
+        window.addEventListener('load', () => {
+            setTimeout(checkModuleLoading, 500);
+        });
+    </script>
+</body>
+</html>

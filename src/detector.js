@@ -1,0 +1,137 @@
+/**
+ * 元素检测模块
+ */
+(function() {
+  const detector = {
+    isDetecting: false,
+    detectionBox: null,
+    
+    getElementAt(x, y) {
+      const element = document.elementFromPoint(x, y);
+      if (!element) return null;
+      
+      return {
+        element: element,
+        tagName: element.tagName.toLowerCase(),
+        id: element.id || '',
+        className: element.className || '',
+        textContent: element.textContent ? element.textContent.substring(0, 100) : '',
+        rect: element.getBoundingClientRect(),
+        href: element.href || '',
+        value: element.value || ''
+      };
+    },
+    
+    highlightAt(x, y, duration = 2000) {
+      const element = document.elementFromPoint(x, y);
+      if (!element) return;
+      
+      const rect = element.getBoundingClientRect();
+      const highlight = document.createElement('div');
+      highlight.style.cssText = `
+        position: fixed;
+        left: ${rect.left}px;
+        top: ${rect.top}px;
+        width: ${rect.width}px;
+        height: ${rect.height}px;
+        background: rgba(255, 0, 0, 0.3);
+        border: 2px solid red;
+        pointer-events: none;
+        z-index: 10000;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+      `;
+      
+      document.body.appendChild(highlight);
+      setTimeout(() => {
+        if (highlight.parentNode) {
+          highlight.parentNode.removeChild(highlight);
+        }
+      }, duration);
+    },
+    
+    startRealtimeDetection() {
+      if (this.isDetecting) return;
+      
+      this.detectionBox = document.createElement('div');
+      this.detectionBox.id = 'element-detector-info';
+      this.detectionBox.style.cssText = `
+        position: fixed;
+        top: 60px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        font-family: monospace;
+        font-size: 12px;
+        z-index: 10000;
+        max-width: 300px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      `;
+      
+      const infoText = document.createElement('div');
+      infoText.innerHTML = '<strong>元素检测器已启动</strong><br>按住Ctrl键移动鼠标检测元素';
+      this.detectionBox.appendChild(infoText);
+      
+      // 关闭按钮
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = '×';
+      closeBtn.style.cssText = `
+        position: absolute;
+        top: 2px;
+        right: 5px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+      `;
+      closeBtn.onclick = () => this.stopRealtimeDetection();
+      this.detectionBox.appendChild(closeBtn);
+      
+      // 检测函数
+      const detectElement = (e) => {
+        if (e.ctrlKey) {
+          const elementInfo = this.getElementAt(e.clientX, e.clientY);
+          if (elementInfo) {
+            let info = `<strong>元素信息:</strong><br>`;
+            info += `标签: ${elementInfo.tagName}<br>`;
+            if (elementInfo.id) info += `ID: ${elementInfo.id}<br>`;
+            if (elementInfo.className) info += `类名: ${elementInfo.className}<br>`;
+            info += `坐标: (${e.clientX}, ${e.clientY})<br>`;
+            info += `尺寸: ${Math.round(elementInfo.rect.width)}×${Math.round(elementInfo.rect.height)}<br>`;
+            
+            infoText.innerHTML = info;
+            this.highlightAt(e.clientX, e.clientY, 500);
+          }
+        }
+      };
+      
+      document.addEventListener('mousemove', detectElement);
+      document.body.appendChild(this.detectionBox);
+      this.isDetecting = true;
+      this.detectionHandler = detectElement;
+    },
+    
+    stopRealtimeDetection() {
+      if (!this.isDetecting) return;
+      
+      document.removeEventListener('mousemove', this.detectionHandler);
+      if (this.detectionBox && this.detectionBox.parentNode) {
+        this.detectionBox.parentNode.removeChild(this.detectionBox);
+      }
+      this.isDetecting = false;
+      this.detectionBox = null;
+    }
+  };
+  
+  // 导出
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = detector;
+  } else {
+    window.domToolkitDetector = detector;
+  }
+})();

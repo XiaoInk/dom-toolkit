@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDN 测试 - DOM Toolkit</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2196F3;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+        .result {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            border-left: 4px solid #4CAF50;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .error {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        .success {
+            border-left-color: #4CAF50;
+            background: #e8f5e8;
+        }
+        .info {
+            border-left-color: #2196F3;
+            background: #e3f2fd;
+        }
+        .cdn-info {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #ff9800;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌐 CDN 测试 - DOM Toolkit</h1>
+    
+    <div class="cdn-info">
+        <strong>当前测试的 CDN 链接：</strong><br>
+        主包: https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/index.js<br>
+        坐标模块: https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/modules/coordinate.min.iife.js<br>
+        交互模块: https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/modules/interactor.min.iife.js
+    </div>
+
+    <div class="test-section">
+        <h2>📋 CDN 加载状态</h2>
+        <button onclick="testCDNLoading()">测试 CDN 加载</button>
+        <div id="cdn-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 功能测试</h2>
+        <button onclick="testCDNFunctionality()">测试 CDN 功能</button>
+        <div id="function-results"></div>
+    </div>
+
+    <!-- 加载主包 -->
+    <script src="https://cdn.jsdelivr.net/gh/xiaoink/dom-toolkit@latest/dist/index.js"></script>
+    
+    <script>
+        function addResult(containerId, message, type = 'success') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            
+            switch(type) {
+                case 'error':
+                    div.className = 'result error';
+                    break;
+                case 'info':
+                    div.className = 'result info';
+                    break;
+                case 'success':
+                    div.className = 'result success';
+                    break;
+                default:
+                    div.className = 'result';
+            }
+            
+            div.textContent = message;
+            container.appendChild(div);
+        }
+
+        function clearResults(containerId) {
+            document.getElementById(containerId).innerHTML = '';
+        }
+
+        function testCDNLoading() {
+            clearResults('cdn-results');
+            
+            // 测试主包加载
+            if (typeof window.domToolkit !== 'undefined') {
+                addResult('cdn-results', '✅ 主包 domToolkit 加载成功');
+            } else {
+                addResult('cdn-results', '❌ 主包 domToolkit 加载失败', 'error');
+                return;
+            }
+            
+            // 检查主包方法
+            const mainMethods = ['click', 'doubleClick', 'scroll', 'getPosition'];
+            let mainSuccessCount = 0;
+            
+            mainMethods.forEach(method => {
+                if (typeof window.domToolkit[method] === 'function') {
+                    addResult('cdn-results', `✅ domToolkit.${method}() 可用`);
+                    mainSuccessCount++;
+                } else {
+                    addResult('cdn-results', `❌ domToolkit.${method}() 不可用`, 'error');
+                }
+            });
+            
+            // 检查模块引用
+            if (window.domToolkit.coordinates) {
+                addResult('cdn-results', '✅ 坐标模块引用可用');
+            } else {
+                addResult('cdn-results', '⚠️ 坐标模块引用不可用（独立模块未加载）', 'info');
+            }
+            
+            if (mainSuccessCount === mainMethods.length) {
+                addResult('cdn-results', '🎉 CDN 加载测试完全成功！');
+            } else {
+                addResult('cdn-results', `⚠️ CDN 加载测试: ${mainSuccessCount}/${mainMethods.length} 方法可用`, 'info');
+            }
+        }
+
+        async function testCDNFunctionality() {
+            clearResults('function-results');
+            
+            try {
+                addResult('function-results', '🔄 开始功能测试...', 'info');
+                
+                // 测试位置获取
+                const position = domToolkit.getPosition();
+                addResult('function-results', `✅ 位置获取成功: x=${position.x}, y=${position.y}`);
+                
+                // 测试滚动
+                await domToolkit.scrollBy(0, 50);
+                addResult('function-results', '✅ 相对滚动成功');
+                
+                // 滚动回来
+                await domToolkit.scrollBy(0, -50);
+                addResult('function-results', '✅ 滚动恢复成功');
+                
+                addResult('function-results', '🎉 CDN 功能测试完全成功！');
+                
+            } catch (error) {
+                addResult('function-results', `❌ 功能测试失败: ${error.message}`, 'error');
+                console.error('CDN functionality test error:', error);
+            }
+        }
+
+        // 页面加载完成后自动测试
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testCDNLoading();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

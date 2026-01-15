@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>滚动测试修复验证</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .test-area {
+            height: 200vh;
+            background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+            padding: 20px;
+        }
+        .section {
+            height: 200px;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+        button {
+            display: block;
+            width: 200px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e8f5e8;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <h3>滚动测试控制</h3>
+        <button onclick="testScrollBy()">测试 scrollBy</button>
+        <button onclick="testScroll()">测试 scroll</button>
+        <button onclick="testGetPosition()">获取位置</button>
+        <button onclick="testScrollToElement()">滚动到第4段</button>
+        <div id="status" class="status">等待测试...</div>
+    </div>
+
+    <div class="test-area">
+        <div class="section" id="section1">第 1 段</div>
+        <div class="section" id="section2">第 2 段</div>
+        <div class="section" id="section3">第 3 段</div>
+        <div class="section" id="section4">第 4 段</div>
+        <div class="section" id="section5">第 5 段</div>
+    </div>
+
+    <!-- 加载所有模块 -->
+    <script src="../dist/index.js"></script>
+    <script src="../dist/modules/coordinate.min.iife.js"></script>
+    <script src="../dist/modules/detector.min.iife.js"></script>
+    <script src="../dist/modules/interactor.min.iife.js"></script>
+    <script src="../dist/modules/scroller.min.iife.js"></script>
+    
+    <script>
+        function updateStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            status.style.background = isError ? '#ffebee' : '#e8f5e8';
+            status.style.color = isError ? '#c62828' : '#2e7d32';
+            status.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        }
+
+        async function testScrollBy() {
+            try {
+                updateStatus('🔄 测试 scrollBy...');
+                
+                // 向下滚动
+                await domToolkit.scrollBy(0, 200);
+                updateStatus('✅ scrollBy 向下滚动成功');
+                
+                setTimeout(async () => {
+                    // 向上滚动
+                    await domToolkit.scrollBy(0, -200);
+                    updateStatus('✅ scrollBy 向上滚动成功');
+                }, 1000);
+                
+            } catch (error) {
+                updateStatus(`❌ scrollBy 测试失败: ${error.message}`, true);
+                console.error('ScrollBy test error:', error);
+            }
+        }
+
+        async function testScroll() {
+            try {
+                updateStatus('🔄 测试 scroll 方法...');
+                
+                // 向下滚动
+                await domToolkit.scroll('down', 150);
+                updateStatus('✅ scroll 向下滚动成功');
+                
+                setTimeout(async () => {
+                    // 向上滚动
+                    await domToolkit.scroll('up', 150);
+                    updateStatus('✅ scroll 向上滚动成功');
+                }, 1000);
+                
+            } catch (error) {
+                updateStatus(`❌ scroll 测试失败: ${error.message}`, true);
+                console.error('Scroll test error:', error);
+            }
+        }
+
+        async function testGetPosition() {
+            try {
+                updateStatus('🔄 测试获取位置...');
+                
+                const position = domToolkit.getPosition();
+                updateStatus(`✅ 位置获取成功: x=${position.x}, y=${position.y}`);
+                
+            } catch (error) {
+                updateStatus(`❌ 位置获取失败: ${error.message}`, true);
+                console.error('GetPosition test error:', error);
+            }
+        }
+
+        async function testScrollToElement() {
+            try {
+                updateStatus('🔄 测试滚动到元素...');
+                
+                await domToolkit.scrollToElement('#section4');
+                updateStatus('✅ 滚动到元素成功');
+                
+            } catch (error) {
+                updateStatus(`❌ 滚动到元素失败: ${error.message}`, true);
+                console.error('ScrollToElement test error:', error);
+            }
+        }
+
+        // 页面加载完成后自动测试
+        window.addEventListener('load', () => {
+            updateStatus('🚀 页面加载完成，可以开始测试');
+            
+            // 自动执行一次基本测试
+            setTimeout(() => {
+                testGetPosition();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
